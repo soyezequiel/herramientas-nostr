@@ -4,6 +4,23 @@ Kit autocontenido para agregar **Bunker Auto Login (BAL)** a un juego web. El
 juego recibe un signer Nostr compatible con NIP-46 sin ver ni persistir una
 `nsec` o una Bunker URI.
 
+## Skill de integración
+
+Para implementar o revisar el SDK con un agente de código, usá la skill
+[`integrate-nostr-bal-sdk`](skills/integrate-nostr-bal-sdk/SKILL.md). Incluye el
+flujo completo, plantillas Vite, contrato de seguridad, matriz de pruebas y un
+auditor estático de la integración.
+
+Prompt sugerido:
+
+```text
+Usá $integrate-nostr-bal-sdk para integrar BAL en este juego y validar el resultado.
+```
+
+Si el agente no descubre skills locales automáticamente, indicále la ruta
+`skills/integrate-nostr-bal-sdk/SKILL.md` o instalá esa carpeta en su directorio
+de skills.
+
 Incluye:
 
 - handshake seguro con el launcher mediante `postMessage` y origen exacto;

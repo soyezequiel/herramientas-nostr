@@ -1,0 +1,82 @@
+import {
+  createBalBrowserLogin,
+  type BalBrowserSigner,
+  type BalSignerPhase,
+  type BalSignerStatus,
+} from "nostr-bal-browser-sdk";
+
+const GAME_ID = "__GAME_ID__";
+const GAME_NAME = "__GAME_NAME__";
+
+// Keep this list identical to the launcher manifest. Remove unused operations.
+const PERMISSIONS = [
+  "get_public_key",
+  "sign_event:22242",
+  __ADDITIONAL_PERMISSIONS__
+];
+
+export const balLogin = createBalBrowserLogin({
+  gameId: GAME_ID,
+  gameName: GAME_NAME,
+  permissions: PERMISSIONS,
+  launcherOriginStorageKey: `${GAME_ID}.bal.launcher-origin.v1`,
+  shared: {
+    createWorker: () => new SharedWorker(
+      new URL("./bal-worker.ts", import.meta.url),
+      { type: "module", name: `${GAME_ID}-bal-v1` },
+    ),
+    activeHintKey: `${GAME_ID}.bal.shared-active.v1`,
+  },
+});
+
+export type ConnectedBalSigner = {
+  signer: BalBrowserSigner;
+  pubkey: string;
+};
+
+/**
+ * Capture the validated launcher origin before cleaning the visible URL.
+ * Preserve room/invite/debug parameters and the fragment.
+ */
+export function captureBalContext(): {
+  hasContext: boolean;
+  explicitLaunch: boolean;
+} {
+  const initial = new URLSearchParams(window.location.search);
+  const explicitLaunch = initial.get("lnBal") !== "off"
+    && Boolean(initial.get("lnOrigin")?.trim());
+  const hasContext = balLogin.hasLauncherContext();
+
+  if (explicitLaunch && hasContext) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("lnOrigin");
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }
+
+  return { hasContext, explicitLaunch };
+}
+
+/** Resolve the remote pubkey once and pass it through the app login flow. */
+export async function connectBal(
+  onLauncherLogout: () => void,
+  onConsentRequired?: () => void,
+): Promise<ConnectedBalSigner | null> {
+  const signer = await balLogin.connect(onLauncherLogout, onConsentRequired);
+  if (!signer) return null;
+  const pubkey = (await signer.getPublicKey()).trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(pubkey)) {
+    await balLogin.logout();
+    throw new Error("BAL returned an invalid Nostr pubkey");
+  }
+  return { signer, pubkey };
+}
+
+export type {
+  BalBrowserSigner,
+  BalSignerPhase,
+  BalSignerStatus,
+};

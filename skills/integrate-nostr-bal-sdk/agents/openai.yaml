@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integrar Nostr BAL SDK"
+  short_description: "Integra BAL seguro, rápido y multicuenta"
+  default_prompt: "Usa $integrate-nostr-bal-sdk para integrar u optimizar el login BAL de Nostr en este proyecto."
