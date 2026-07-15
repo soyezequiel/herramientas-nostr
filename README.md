@@ -152,7 +152,8 @@ await bal.logout({ forgetLauncher: true });
 
 `logout()` libera únicamente la pestaña actual. Si quedan otras pestañas, el
 `SharedWorker` y NIP-46 continúan. Al cerrarse la última pestaña, el worker libera
-su cliente local.
+su cliente local y envía el `logout` NIP-46 para que el launcher cierre también
+el signer remoto.
 
 ## Estado para UI
 

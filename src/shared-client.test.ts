@@ -121,7 +121,9 @@ describe("BAL SharedWorker broker", () => {
     expect(signed.id).toBe("signed");
     expect(engines.at(-1)?.close).not.toHaveBeenCalled();
 
+    const activeEngine = engines.at(-1)!;
     otherTab.release();
+    await vi.waitFor(() => expect(activeEngine.close).toHaveBeenCalledOnce());
   });
 
   it("cierra el worker para todos cuando Luna revoca la sesión", async () => {
