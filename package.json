@@ -1,0 +1,41 @@
+{
+  "name": "nostr-bal-browser-sdk",
+  "version": "0.1.0",
+  "description": "SDK modular de Bunker Auto Login (BAL) para juegos web Nostr",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./worker": {
+      "types": "./dist/worker-entry.d.ts",
+      "import": "./dist/worker-entry.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "nostr-game-protocol": ">=0.6.0 <1",
+    "nostr-tools": ">=2.23.9 <3"
+  },
+  "devDependencies": {
+    "nostr-game-protocol": "github:soyezequiel/Nostr-Game-Protocol",
+    "nostr-tools": "^2.23.9",
+    "typescript": "^5.6.2",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
