@@ -6,6 +6,7 @@
   "license": "MIT",
   "files": [
     "dist",
+    "src",
     "README.md"
   ],
   "exports": {
